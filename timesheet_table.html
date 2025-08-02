@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal de Chantier - Rapport Hebdomadaire</title>
+    
+    <!-- AG Grid CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.2/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.2/styles/ag-theme-alpine.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .company-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+        }
+        
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        .info-box {
+            border: 1px solid #000;
+            padding: 5px;
+            margin: 2px;
+            min-height: 30px;
+            flex: 1;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .grid-container {
+            height: 600px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .ag-theme-alpine {
+            --ag-header-height: 40px;
+            --ag-header-foreground-color: black;
+            --ag-header-background-color: #f0f0f0;
+            --ag-border-color: #000;
+            --ag-cell-horizontal-border: solid 1px #000;
+            --ag-row-border-color: #000;
+        }
+        
+        .ag-header-cell-text {
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        .ag-cell {
+            font-size: 11px;
+            border-right: 1px solid #000 !important;
+        }
+        
+        .footer-info {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="company-info">
+        COMMUNE MIXTE<br>
+        RVAS<br>
+        23/04/2014
+    </div>
+    
+    <div class="header">
+        <h1>JOURNAL DE CHANTIER :</h1>
+        <h1>RAPPORT HEBDOMADAIRE</h1>
+    </div>
+    
+    <div class="info-section">
+        <div style="display: flex; flex-direction: column; flex: 1;">
+            <div style="display: flex;">
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J1 :</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J2 :</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J3 :</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J4 :</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J5 :</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">J6 :</div>
+                </div>
+            </div>
+            <div style="display: flex;">
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">Ressource humaine</div>
+                </div>
+            </div>
+            <div style="display: flex;">
+                <div class="info-box" style="flex: 1;">
+                    <div class="info-label">Horaire de travail</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; flex: 1; margin-left: 20px;">
+            <div class="info-box">
+                <div class="info-label">Département</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">Engagement</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">Chef chantier</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">Chef d'équipe</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="myGrid" class="ag-theme-alpine grid-container"></div>
+    
+    <div class="footer-info">
+        <div style="text-align: right; margin-top: 10px;">
+            <strong>Fiche de contrôle</strong>
+        </div>
+    </div>
+
+    <!-- AG Grid JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.2/dist/ag-grid-community.min.js"></script>
+    
+    <script>
+        // Column definitions matching the table structure
+        const columnDefs = [
+            {
+                headerName: 'Réf',
+                field: 'ref',
+                width: 60,
+                pinned: 'left'
+            },
+            {
+                headerName: 'Tâches',
+                field: 'tasks',
+                width: 200,
+                pinned: 'left'
+            },
+            {
+                headerName: 'Prédécesseur',
+                field: 'predecessor',
+                width: 100
+            },
+            {
+                headerName: 'Unité',
+                field: 'unit',
+                width: 70
+            },
+            {
+                headerName: 'Cumul S-1',
+                field: 'cumulS1',
+                width: 80
+            },
+            {
+                headerName: 'Quantité travaux achevés',
+                headerClass: 'group-header',
+                children: [
+                    { headerName: 'Lundi', field: 'monday', width: 70 },
+                    { headerName: 'Mardi', field: 'tuesday', width: 70 },
+                    { headerName: 'Mercredi', field: 'wednesday', width: 80 },
+                    { headerName: 'Jeudi', field: 'thursday', width: 70 },
+                    { headerName: 'Vendredi', field: 'friday', width: 80 },
+                    { headerName: 'Samedi', field: 'saturday', width: 70 }
+                ]
+            },
+            {
+                headerName: 'Cumul.',
+                field: 'cumul',
+                width: 70
+            },
+            {
+                headerName: 'Qte TX à faire hebdo',
+                field: 'qteWeekly',
+                width: 90
+            },
+            {
+                headerName: 'Achèv. % hebdo',
+                field: 'achievementWeekly',
+                width: 90
+            },
+            {
+                headerName: 'Qte TX Total',
+                field: 'qteTotal',
+                width: 80
+            },
+            {
+                headerName: 'Qte TX Total à faire',
+                field: 'qteTotalToDo',
+                width: 100
+            },
+            {
+                headerName: 'Achèv. %',
+                field: 'achievement',
+                width: 80
+            },
+            {
+                headerName: 'Date de Fin',
+                field: 'endDate',
+                width: 90
+            },
+            {
+                headerName: 'ÉCART',
+                headerClass: 'group-header',
+                children: [
+                    { headerName: 'AVANCE', field: 'advance', width: 70 },
+                    { headerName: 'RETARD', field: 'delay', width: 70 }
+                ]
+            },
+            {
+                headerName: 'MACHINE',
+                headerClass: 'group-header',
+                children: [
+                    { headerName: 'MOBILITÉ', field: 'mobility', width: 80 },
+                    { headerName: 'ENTRET', field: 'maintenance', width: 70 }
+                ]
+            },
+            {
+                headerName: 'Remarque',
+                field: 'remark',
+                width: 150,
+                pinned: 'right'
+            }
+        ];
+
+        // Sample data - you can replace this with your actual data
+        const rowData = [
+            {
+                ref: '001',
+                tasks: 'Préparation du terrain',
+                predecessor: '',
+                unit: 'm²',
+                cumulS1: '0',
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: '',
+                saturday: '',
+                cumul: '',
+                qteWeekly: '',
+                achievementWeekly: '',
+                qteTotal: '',
+                qteTotalToDo: '',
+                achievement: '',
+                endDate: '',
+                advance: '',
+                delay: '',
+                mobility: '',
+                maintenance: '',
+                remark: ''
+            },
+            {
+                ref: '002',
+                tasks: 'Excavation',
+                predecessor: '001',
+                unit: 'm³',
+                cumulS1: '0',
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: '',
+                saturday: '',
+                cumul: '',
+                qteWeekly: '',
+                achievementWeekly: '',
+                qteTotal: '',
+                qteTotalToDo: '',
+                achievement: '',
+                endDate: '',
+                advance: '',
+                delay: '',
+                mobility: '',
+                maintenance: '',
+                remark: ''
+            },
+            {
+                ref: '003',
+                tasks: 'Coulage béton',
+                predecessor: '002',
+                unit: 'm³',
+                cumulS1: '0',
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: '',
+                saturday: '',
+                cumul: '',
+                qteWeekly: '',
+                achievementWeekly: '',
+                qteTotal: '',
+                qteTotalToDo: '',
+                achievement: '',
+                endDate: '',
+                advance: '',
+                delay: '',
+                mobility: '',
+                maintenance: '',
+                remark: ''
+            }
+        ];
+
+        // Add more empty rows for the template
+        for (let i = 4; i <= 20; i++) {
+            rowData.push({
+                ref: '',
+                tasks: '',
+                predecessor: '',
+                unit: '',
+                cumulS1: '',
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: '',
+                saturday: '',
+                cumul: '',
+                qteWeekly: '',
+                achievementWeekly: '',
+                qteTotal: '',
+                qteTotalToDo: '',
+                achievement: '',
+                endDate: '',
+                advance: '',
+                delay: '',
+                mobility: '',
+                maintenance: '',
+                remark: ''
+            });
+        }
+
+        // Grid options
+        const gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rowData,
+            defaultColDef: {
+                editable: true,
+                resizable: true,
+                sortable: false,
+                filter: false,
+                cellStyle: {
+                    'border-right': '1px solid #000',
+                    'border-bottom': '1px solid #000'
+                }
+            },
+            suppressHorizontalScroll: false,
+            suppressRowHoverHighlight: true,
+            rowHeight: 25,
+            headerHeight: 40,
+            getRowStyle: function(params) {
+                return {
+                    'border-bottom': '1px solid #000'
+                };
+            },
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            }
+        };
+
+        // Initialize the grid
+        document.addEventListener('DOMContentLoaded', function() {
+            const gridDiv = document.querySelector('#myGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
+        });
+    </script>
+</body>
+</html>
